@@ -15,7 +15,7 @@ export default function InputComponent({
   return (
     <div className=" w-[50rem] absolute left-1/2 -translate-x-1/2 bottom-6">
       <label className="sr-only">Your message</label>
-      <div className="flex items-center py-2 px-3 bg-stone-500 rounded-lg">
+      <div className="flex items-center py-2 px-3 bg-cyan-600 rounded-lg">
         <div
           style={{
             verticalAlign: "bottom",
@@ -25,8 +25,19 @@ export default function InputComponent({
         >
           <textarea
             ref={inputRef}
+            onKeyDown={(e) => {
+              if (e.keyCode === 13 && !e.shiftKey) {
+                e.preventDefault();
+
+                if (userInput == undefined || userInput.trim() === "") {
+                  return;
+                }
+                addMessage(userInput!);
+                setUserInput("");
+              }
+            }}
             id="chat"
-            className="block mx-4 p-2.5 w-full bg-stone-500  rounded-lg 
+            className="block mx-4 p-2.5 w-full bg-cyan-600  rounded-lg 
         placeholder:text-gray-300 text-white text-base
         focus-visible:outline-none caret-white h-[44px] max-h-[150px]"
             style={{ resize: "none" }}
@@ -50,7 +61,7 @@ export default function InputComponent({
           className={`inline-flex justify-center p-2 ${
             userInput == undefined || userInput === ""
               ? "text-gray-400 cursor-not-allowed"
-              : "text-white hover:bg-stone-800"
+              : "text-white hover:bg-cyan-800"
           } rounded-full cursor-pointer 
            transition-colors`}
         >

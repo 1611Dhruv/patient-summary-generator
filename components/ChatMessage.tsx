@@ -8,16 +8,24 @@ export default function ChatMessage({
   message,
   className,
   id,
+  in_response,
   deleteMessage,
+  saveResponse,
+  savePromptUpdate,
 }: {
   message: string;
   className: string;
+  in_response: string | undefined;
   id: string;
   deleteMessage: (id: string) => void;
+  saveResponse: (id: string, response: string) => void;
+  savePromptUpdate: (id: string, response: string) => void;
 }) {
   const [visibleMessage, setVisibleMessage] = useState<string>(message);
   const [loading, setLoading] = useState<Boolean>(false);
-  const [response, setResponse] = useState<string>("");
+  const [response, setResponse] = useState<string>(
+    in_response ? in_response : ""
+  );
   const [copied, setCopied] = useState<boolean>(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const respRef = useRef(null);
@@ -25,23 +33,44 @@ export default function ChatMessage({
 
   useAutosizeTextArea(inputRef.current, visibleMessage);
 
+  useEffect(() => {
+    if (inputRef.current) {
+      const oldHeight = inputRef.current.style.height;
+      inputRef.current.style.height = "0px";
+      // We need to reset the height momentarily to get the correct scrollHeight for the textarea
+      const scrollHeight = inputRef.current.scrollHeight;
+      if (
+        scrollHeight > 150 &&
+        scrollHeight > parseInt(oldHeight.substring(0, oldHeight.length - 2))
+      ) {
+        inputRef.current.style.height = oldHeight;
+        return;
+      }
+
+      // We then set the height directly, outside of the render loop
+      // Trying to set this with state or a ref will product an incorrect value.
+      inputRef.current.style.height = scrollHeight + "px";
+    }
+  }, []);
+
   const fetchResponse = async () => {
     setLoading(true);
     const response = await fetch("/api/gemini", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        prompt: visibleMessage, //Or your preferred prompt
+        prompt: visibleMessage, //Or your prefercyan prompt
       }),
     });
     if (!response.ok) {
       throw new Error(response.statusText);
     }
     const data = await response.json();
-    console.log(data);
     const generatedData = await JSON.parse(data.response);
-    console.log(generatedData);
-    setResponse(generatedData.candidates[0].content.parts[0].text);
+    const resp = generatedData.candidates[0].content.parts[0].text;
+    console.log(resp);
+    setResponse(resp);
+    saveResponse(id, resp);
     setLoading(false);
   };
 
@@ -51,25 +80,15 @@ export default function ChatMessage({
   }, [loading]);
   const copyFormatted = (html: string) => {
     // Create an iframe (isolated container) for the HTML
-    var container = document.createElement("div");
-    container.innerHTML = html;
-
+    var container = document.createElement("span");
     // Hide element
     container.style.position = "fixed";
     container.style.pointerEvents = "none";
     container.style.opacity = "0";
+    container.innerHTML = html;
 
-    // Detect all style sheets of the page
-    var activeSheets = Array.prototype.slice
-      .call(document.styleSheets)
-      .filter(function (sheet) {
-        return !sheet.disabled;
-      });
-
-    // Mount the iframe to the DOM to make `contentWindow` available
     document.body.appendChild(container);
 
-    // Copy to clipboard
     window.getSelection()!.removeAllRanges();
 
     var range = document.createRange();
@@ -77,13 +96,7 @@ export default function ChatMessage({
     window.getSelection()!.addRange(range);
 
     document.execCommand("copy");
-    for (var i = 0; i < activeSheets.length; i++)
-      activeSheets[i].disabled = true;
-    document.execCommand("copy");
-    for (var i = 0; i < activeSheets.length; i++)
-      activeSheets[i].disabled = false;
 
-    // Remove the iframe
     document.body.removeChild(container);
   };
 
@@ -110,7 +123,10 @@ export default function ChatMessage({
         <textarea
           ref={inputRef}
           value={visibleMessage}
-          onChange={(e) => setVisibleMessage(e.target.value)}
+          onChange={(e) => {
+            setVisibleMessage(e.target.value);
+            savePromptUpdate(id, e.target.value);
+          }}
           className="font-normal text-gray-700 w-full focus-visible:outline-none 
           resize-none pb-0 leading-[1.5] space-y-0 max-h-[150px]"
         />
@@ -133,7 +149,7 @@ export default function ChatMessage({
           <button
             onClick={fetchResponse}
             ref={buttonRef}
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-stone-800 text-white shadow hover:bg-primary/90 h-9 px-4 py-2 hover:bg-stone-700"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-cyan-800 text-white shadow hover:bg-primary/90 h-9 px-4 py-2 hover:bg-cyan-700"
           >
             Generate Response
           </button>
@@ -141,7 +157,7 @@ export default function ChatMessage({
             {/* Copy Button */}
             <button
               onClick={copyToClip}
-              className=" text-white bg-stone-800 hover:bg-emerald-400 rounded-lg p-2 inline-flex items-center justify-center h-[40px] w-[40px]"
+              className=" text-white bg-cyan-800 hover:bg-emerald-400 rounded-lg p-2 inline-flex items-center justify-center h-[40px] w-[40px]"
             >
               {!copied ? (
                 <svg
@@ -159,29 +175,27 @@ export default function ChatMessage({
                   />
                 </svg>
               ) : (
-                <span id="success-icon" className="inline-flex items-center">
-                  <svg
-                    className="w-3.5 h-3.5  text-white"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 16 12"
-                  >
-                    <path
-                      stroke="white"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M1 5.917 5.724 10.5 15 1.5"
-                    />
-                  </svg>
-                </span>
+                <svg
+                  className="size-6  text-white w-4"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 16 12"
+                >
+                  <path
+                    stroke="white"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M1 5.917 5.724 10.5 15 1.5"
+                  />
+                </svg>
               )}
             </button>
             {/* Delete Button */}
             <button
               onClick={() => deleteMessage(id)}
-              className=" text-white bg-stone-800 hover:bg-red-500 rounded-lg p-2 inline-flex items-center justify-center h-[40px] w-[40px] ml-2"
+              className=" text-white bg-cyan-800 hover:bg-red-500 rounded-lg p-2 inline-flex items-center justify-center h-[40px] w-[40px] ml-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

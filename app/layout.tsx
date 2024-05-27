@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const roboto = Roboto({ weight: "400", subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "Patient Summary Generator",
+  title: "Patient Summary",
   description: "A simple application to generate patient summaries",
+  icons: [
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "32x32",
+      url: "/icon.png",
+    },
+  ],
 };
 
 export default function RootLayout({

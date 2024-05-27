@@ -5,6 +5,7 @@ import InputComponent from "./InputComponent";
 import { v4 as uuidv4 } from "uuid";
 type ChatType = {
   message: string;
+  response?: string;
   uuid: string;
 };
 
@@ -12,34 +13,92 @@ const ChatComponent = () => {
   // State to store chat messages
   const [messages, setMessages] = useState<ChatType[]>([]);
   const [userInput, setUserInput] = useState<string>();
+  const [loading, setLoading] = useState(true);
   const listRef = useRef(null);
 
   // Function to add a new message to the chat
   const addMessage = (newMessage: string) => {
-    const newChat: ChatType = {
-      message: newMessage,
-      uuid: uuidv4(),
-    };
-    setMessages((prevMessages) => [...prevMessages, newChat]);
-  };
-
-  const deleteMessage = (id: string) => {
     setMessages((prevMessages) => {
-      const newMsg = prevMessages.filter((e) => e.uuid != id);
-      return newMsg;
+      let newChat: ChatType | undefined = undefined;
+      const oldMessagesUid = prevMessages.map((e) => e.uuid);
+      while (!newChat || oldMessagesUid.includes(newChat.uuid)) {
+        newChat = {
+          message: newMessage,
+          uuid: uuidv4(),
+        };
+      }
+      const updatedMessages = [...prevMessages, newChat];
+      if (typeof window !== "undefined")
+        localStorage.setItem("chatMessages", JSON.stringify(updatedMessages));
+      return updatedMessages;
     });
-  };
-
-  useEffect(() => {
     if (listRef.current) {
       // console.log("scrolling");
       // @ts-ignore
       listRef.current?.lastElementChild?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  };
 
-  return (
-    <div className="justify-center min-h-screen from-stone-400 via-stone-700 to-stone-900 bg-gradient-to-br">
+  const saveResponse = (id: string, response: string) => {
+    setMessages((old) => {
+      let i = 0;
+      for (let m of old) {
+        if (m.uuid === id) {
+          break;
+        }
+        i++;
+      }
+      console.log(i);
+      const la = old;
+      la[i].response = response;
+      return la;
+    });
+
+    if (typeof window !== "undefined")
+      localStorage.setItem("chatMessages", JSON.stringify(messages));
+  };
+
+  const savePromptUpdate = (id: string, prompt: string) => {
+    setMessages((old) => {
+      let i = 0;
+      for (let m of old) {
+        if (m.uuid === id) {
+          break;
+        }
+        i++;
+      }
+      console.log(i);
+      const la = old;
+      la[i].message = prompt;
+      return la;
+    });
+    if (typeof window !== "undefined")
+      localStorage.setItem("chatMessages", JSON.stringify(messages));
+  };
+
+  const deleteMessage = (id: string) => {
+    setMessages((prevMessages) => {
+      const updatedMessages = prevMessages.filter((e) => e.uuid !== id);
+      if (typeof window !== "undefined")
+        localStorage.setItem("chatMessages", JSON.stringify(updatedMessages));
+      return updatedMessages;
+    });
+  };
+
+  useEffect(() => {
+    const data = localStorage.getItem("chatMessages");
+    if (data) {
+      setMessages(JSON.parse(data));
+    }
+    setLoading(false);
+  }, []);
+
+  return loading ? (
+    <div className="justify-center min-h-screen from-cyan-500 via-cyan-800 to-cyan-950 bg-gradient-to-br flex items-center align-middle">
+      <div className="spinner"></div>
+    </div>
+  ) : (
+    <div className="justify-center min-h-screen from-cyan-500 via-cyan-800 to-cyan-950 bg-gradient-to-br">
       {/* Chat bubbles */}
       {messages.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-[47rem] w-[50rem] m-auto">
@@ -67,7 +126,10 @@ const ChatComponent = () => {
               className=" mb-2"
               message={chat.message}
               id={chat.uuid}
+              in_response={chat.response}
               deleteMessage={deleteMessage}
+              saveResponse={saveResponse}
+              savePromptUpdate={savePromptUpdate}
             />
           ))}
           <div className=" h-6" />
