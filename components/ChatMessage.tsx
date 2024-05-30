@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import MarkdownPreview from "./MarkdownPreview";
 import BouncingDotsLoader from "./BouncingDotsLoader";
 import useAutosizeTextArea from "./useAutosizeTextArea";
+import "regenerator-runtime/runtime";
 
 export default function ChatMessage({
   message,

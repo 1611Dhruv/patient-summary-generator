@@ -1,5 +1,7 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import useAutosizeTextArea from "./useAutosizeTextArea";
+import Microphone from "./Microphone";
+import { useSpeechRecognition } from "react-speech-recognition";
 
 export default function InputComponent({
   userInput,
@@ -12,6 +14,19 @@ export default function InputComponent({
 }) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   useAutosizeTextArea(inputRef.current, userInput!);
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition();
+
+  useEffect(() => {
+    if (listening) {
+      setUserInput(transcript);
+    }
+  }, [transcript]);
+
   return (
     <div className=" w-[50rem] absolute left-1/2 -translate-x-1/2 bottom-6">
       <label className="sr-only">Your message</label>
@@ -34,6 +49,7 @@ export default function InputComponent({
                 }
                 addMessage(userInput!);
                 setUserInput("");
+                resetTranscript();
               }
             }}
             id="chat"
@@ -45,11 +61,19 @@ export default function InputComponent({
             placeholder="Your message..."
             onChange={(e) => {
               setUserInput(e.target.value);
-              // console.log(userInput);
+              resetTranscript();
             }}
           ></textarea>
         </div>
 
+        <Microphone
+          {...{
+            transcript,
+            listening,
+            resetTranscript,
+            browserSupportsSpeechRecognition,
+          }}
+        />
         <button
           onClick={() => {
             if (userInput == undefined || userInput.trim() === "") {
@@ -57,6 +81,7 @@ export default function InputComponent({
             }
             addMessage(userInput!);
             setUserInput("");
+            resetTranscript();
           }}
           className={`inline-flex justify-center p-2 ${
             userInput == undefined || userInput === ""

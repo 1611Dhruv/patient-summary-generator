@@ -121,7 +121,7 @@ export async function POST(req: Request) {
     location: "asia-south1",
   }).getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  //   console.log(`recieved request: ${prompt}`);
+  console.log(`recieved request: ${prompt}`);
   const request = {
     contents: [{ role: "user", parts: [{ text: prompt }] }],
     systemInstruction: {

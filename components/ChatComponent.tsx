@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import ChatMessage from "./ChatMessage";
 import InputComponent from "./InputComponent";
 import { v4 as uuidv4 } from "uuid";
+
 type ChatType = {
   message: string;
   response?: string;
@@ -13,6 +14,7 @@ const ChatComponent = () => {
   // State to store chat messages
   const [messages, setMessages] = useState<ChatType[]>([]);
   const [userInput, setUserInput] = useState<string>();
+
   const [loading, setLoading] = useState(true);
   const listRef = useRef(null);
 
