@@ -114,6 +114,28 @@ Note that sometimes I might use Clinical notes instead of followup summary they 
 Further I would like you to automatically fill in Diet Advice and Lifestyle Advice based on the Current Diagnosis and the Symptoms exhibited.
 `;
 
+const systemInstruction2: string = `
+You are tasked to generate summary sheets for patients in the following json format:
+
+{
+"PatientUHID": 0,
+"PatientIndoorID": 0,
+"PatientAdmitDate": "0000-00-00",
+"ClinicalNotes": "",
+"ProvisionalDiagnosis": "",
+"FinalDiagnosis": "",
+"TreatmentGiven": "",
+"CourseAfterAdmission": "",
+"ConditionAtDischarge": "",
+"ProcedureCodeForSurgey": "",
+"Investigation": [],
+"Advise": [],
+"Remarks": ""
+}
+
+Feel free to Add in some of your own remarks and advises like lyfestyle changes
+etc based on the medical history.
+`;
 export async function POST(req: Request) {
   const { prompt } = await req.json();
   const generativeModel = new VertexAI({
@@ -128,7 +150,7 @@ export async function POST(req: Request) {
       role: "server",
       parts: [
         {
-          text: systemInstruction,
+          text: systemInstruction2,
         },
       ],
     },
