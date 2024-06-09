@@ -139,8 +139,8 @@ etc based on the medical history.
 export async function POST(req: Request) {
   const { prompt } = await req.json();
   const generativeModel = new VertexAI({
-    project: "turnkey-layout-423219-d0",
-    location: "asia-south1",
+    project: process.env.PROJECT_ID!,
+    location: process.env.LOCATION,
   }).getGenerativeModel({ model: "gemini-1.5-flash" });
 
   console.log(`recieved request: ${prompt}`);
