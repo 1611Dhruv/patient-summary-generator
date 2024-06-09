@@ -52,13 +52,13 @@ The Patient Summary Generator is a powerful tool designed to assist healthcare p
 ### Usage
 
 1. Create a project on [Cloud Console](https://cloud.google.com) and generate your own key. Refer to [Google's documentation on Service Accounts](https://cloud.google.com/iam/docs/keys-create-delete) for more information. Once you have created your account, go ahead and update the GOOGLE_APPLICATION_CREDENTIALS, PROJECT_ID, and LOCATION variables accordingly in the .env file. GOOGLE_APPLICATION_CREDENTIALS should be assigned to the path of your service account's .json key file, PROJECT_ID should be the name of your google cloud project, and LOCATION should be one of the locations for google (default is asia-south1 (Mumbai)). [More about GCP locations](https://cloud.google.com/about/locations)
-1. Open your browser and navigate to `http://localhost:3000`.
-1. Enter the patient's details in the chat-like interface.
-1. Edit the prompt if necessary.
-1. Generate the patient summary.
-1. Copy the formatted output and paste it into any Rich Text Editor.
-1. Manage your prompts using the localStorage feature – view, edit, or delete past prompts.
-1. If you want to update the systemInstructions given to the AI, feel free to edit the systemInstruction variable in app/api/gemini/route.ts
+2. Open your browser and navigate to `http://localhost:3000`.
+3. Enter the patient's details in the chat-like interface.
+4. Edit the prompt if necessary.
+5. Generate the patient summary.
+6. Copy the formatted output and paste it into any Rich Text Editor.
+7. Manage your prompts using the localStorage feature – view, edit, or delete past prompts.
+8. If you want to update the systemInstructions given to the AI, feel free to edit the systemInstruction variable in app/api/gemini/route.ts
 
 ## Contact
 
