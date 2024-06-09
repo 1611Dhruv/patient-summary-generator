@@ -1,44 +1,63 @@
-Here's a modified README for a Chat GPT application that generates patient summaries using Gemini, built with Vertex AI, Next.js, and Tailwind CSS:
-
----
-
 # Patient Summary Generator
 
-This application leverages ChatGPT to generate patient summaries efficiently. It integrates Gemini for robust text generation capabilities and is developed using Vertex AI, Next.js, and Tailwind CSS.
+The Patient Summary Generator is a powerful tool designed to assist healthcare professionals in generating well-formatted patient summaries using AI. This application leverages a chat-like interface for entering patient details and offers a range of features to streamline the process of documenting patient information.
+
+## Features
+
+1. **Chat-Like Structure:**
+   - Enter your prompt mentioning the patient's name, age, diagnosis, symptoms, history, etc., to generate a well-formatted AI-completed patient summary.
+2. **Editable Prompts:**
+
+   - Ability to edit the prompts before generating the patient summary.
+
+3. **Copy and Paste with Formatting:**
+
+   - You can copy the formatted output and paste it into any Rich Text Editor like Word or Google Docs, retaining all formatting.
+
+4. **Local Storage of Prompts:**
+
+   - Saves all your past prompts in localStorage, allowing you to manage your previous prompts and responses and maintain a record.
+
+5. **Delete Unwanted Prompts:**
+   - Easily delete unwanted prompts to keep your records organized.
 
 ## Getting Started
 
-To start the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js
+- npm (Node Package Manager)
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+### Installation
 
-You can begin editing the functionality by modifying `app/page.tsx`. The application auto-updates as you make changes.
+1. Clone the repository:
 
-This project utilizes [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) for automatic optimization and loading of fonts, including Inter, a custom Google Font.
+   ```bash
+   git clone https://github.com/1611Dhruv/patient-app.git
+   cd patient-app
+   ```
 
-## Learn More
+2. Install the dependencies:
 
-Explore more about Next.js and its capabilities:
+   ```bash
+   npm i
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - Interactive tutorial for mastering Next.js.
+3. Start the application:
+   ```bash
+   npm run build
+   npm run start
+   ```
 
-For contributions or feedback, visit the [Next.js GitHub repository](https://github.com/vercel/next.js/).
+### Usage
 
-## Deployment
+1. Open your browser and navigate to `http://localhost:3000`.
+2. Enter the patient's details in the chat-like interface.
+3. Edit the prompt if necessary.
+4. Generate the patient summary.
+5. Copy the formatted output and paste it into any Rich Text Editor.
+6. Manage your prompts using the localStorage feature – view, edit, or delete past prompts.
 
-Deploy your Next.js application effortlessly using the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme), tailored for Next.js deployments. Refer to the [Next.js deployment documentation](https://nextjs.org/docs/deployment) for detailed instructions.
+## Contact
 
----
-
-This README provides an overview of setting up and using the Patient Summary Generator application, highlighting its integration with Gemini for text generation and its technological foundation in Vertex AI, Next.js, and Tailwind CSS.
+If you have any questions or feedback, please feel free to contact me at [ddesai7@wisc.edu].
